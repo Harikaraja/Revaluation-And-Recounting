@@ -6,4 +6,5 @@ app_name = 'rev'
 
 urlpatterns = [
     path('data',views.data,name="data"),
+    path('result',views.result,name="result"),
 ]

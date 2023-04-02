@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{%load static%}
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static 'final.css' %}">
+        <link rel="stylesheet" href="{% static 'print.css' %}">
+    </head>
+    <body>
+        <table style="width: 100%;">
+            <tr>
+                <th>S.No</th>
+                <th>Hall Ticket No</th>
+                <th>Sub.Code</th>
+                <th>Sub.Name</th>
+                <th>Credits</th>
+                <th>Grades</th>
+                <th>Revaluation Status</th>
+            </tr>
+            {% for reval in Revaluation.all %}
+            
+                <input type="hidden" name="id[]" value="{{reval.id}}" />
+            <tr>
+               
+                <td><center>{{reval.id}}</center></td>
+                <td><center>{{reval.Hallticket}}</center>
+                
+                </td>
+                
+                <td id="name"><center>{{reval.Subject_code}}</center></td>
+                <td><center>{{reval.Subject}}</center></td>
+                
+                
+                <td id="name"><center>{{reval.Credits}}</center></td>
+                <td><center>{{reval.Grades}}</center></td>
+                <td>
+                    <input type="text"  name="status" value="{{reval.Revaluation_Status}}">
+                </td>
+                
+                
+            </tr>
+            {% endfor %}
+            
+        </table>
+        <button onclick="window.print()">Print</button>
+        <script src="{% static 'assets\print.js' %}"></script>
+    </body>
+</html>

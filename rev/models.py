@@ -14,3 +14,6 @@ class Revaluation(models.Model):
     External_marks=models.IntegerField()
     Second_evaluation=models.IntegerField(null=True,blank=True)
     Third_evaluation=models.IntegerField(null=True,blank=True)
+    Credits=models.IntegerField()
+    Grades=models.CharField(max_length=2)
+    Revaluation_Status=models.CharField(max_length=20)

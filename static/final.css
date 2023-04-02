@@ -1,0 +1,22 @@
+table,th,td{
+    border: 2px solid black;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+}
+input{
+    border-style:hidden;
+}
+button{
+    padding:10px 25px;
+    margin-top: 2rem;
+    border-radius: 5px;
+    font-size: 17px;
+    font-family: 'Times New Roman', Times, serif;
+    color: white;
+    background-color: green;
+    border-color: green;
+    display: block;
+    position: relative;
+    border-style: none;
+    margin: auto;
+}
