@@ -1,0 +1,14 @@
+table, th, td {
+    border:0.5px solid black;
+}
+td#name{
+    text-transform: uppercase;
+}
+
+input[type='number']{
+    padding-top: 12.5px;
+}
+
+input[type='text']{
+    padding-top: 12px;
+}
