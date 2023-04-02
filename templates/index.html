@@ -1,34 +1,57 @@
+{%load static%}
+
+
 <!DOCTYPE html>
 <html>
-    <link rel="stylesheet" href="st.css">
+    <link rel="stylesheet" href="{% static 'st.css' %}">
     <body>
+        <form method="POST" action="{%  url 'rev:data' %}">
+            {%csrf_token%}
         <table style="width:100%">
             <tr>
-                <th>ROLL NO</th>
-                <th>NAME</th>
-                <th>SUBJECT CODE</th>
-                <th>SUBJECT NAME</th>
-                <th>INTERNAL</th>
-                <th>EXTERNAL(1)</th>
-                <th>GRADE LETTER</th>
-                <th>CREDITS</th>
-                <th>EXTERNAL(2)</th>
-                <th>EXTERNAL(3)</th>
-                <th>RESULT</th>
+                <th id="head">S.No</th>
+                <th id="head">ROLL NO</th>
+                <th id="head">NAME</th>
+                <th id="head">SUBJECT CODE</th>
+                <th id="head">SUBJECT NAME</th>
+                <th id="head">INTERNAL</th>
+                <th id="head">EXTERNAL</th>
+                <th id="head">GRADE LETTER</th>
+                <th id="head">CREDITS</th>
+                <th id="head">SECOND EVALUATION</th>
+                <th id="head">THIRD EVALUATION</th>
+                
             </tr>
+            {% for reval in Revaluation.all %}
+            
+                <input type="hidden" name="id[]" value="{{reval.id}}" />
             <tr>
-                <td><center>20VV1A0507</center></td>
-                <td id="name"><center>bandi gopi chand</center></td>
-                <td><center>R202112PC04</center></td>
-                <td id="name"><center>principles of programming languages</center></td>
-                <td><center>22</center></td>
-                <td><center>75</center></td>
+               
+                <td><center>{{reval.id}}</center></td>
+                <td><center>{{reval.Hallticket}}</center>
+                
+                </td>
+                <td><center>{{reval.Student_Name}}</center></td>
+                <td id="name"><center>{{reval.Subject_code}}</center></td>
+                <td><center>{{reval.Subject}}</center></td>
+                
+                <td><center>{{reval.Internal_marks}}</center></td>
+                <td><center>{{reval.External_marks}}</center></td>
                 <td id="name"><center>c</center></td>
                 <td><center>2</center></td>
-                <td><input type="number" ></td>
-                <td><input type="number" ></td>
-                <td><input type="text"></td>
+                <td>
+                    <input type="number" placeholder="Marks......" name="s_eval[]" value=1>
+                </td>
+                
+                <td>
+                    <input type="number" placeholder="Marks......" name="t_eval[]" value=2>
+                </td>
             </tr>
+            {% endfor %}
         </table>
+        <br>
+        <br><br>
+        <center><input id="submission" type="submit" value="Submit"></center>
+    </form>
     </body>
 </html>

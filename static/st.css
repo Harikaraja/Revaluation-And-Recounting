@@ -1,14 +1,26 @@
 table, th, td {
-    border:0.5px solid black;
+    border:2px solid black;
+    border-collapse: collapse;
 }
 td#name{
     text-transform: uppercase;
+    font-size:small;
 }
 
 input[type='number']{
-    padding-top: 12.5px;
+    width: 100%;
+    height: 100%;
+    padding: 12px 20px;
+    margin: 0 0;
+    box-sizing: border-box;
 }
 
-input[type='text']{
-    padding-top: 12px;
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+th#head{
+    padding: 5px 5px;
 }
