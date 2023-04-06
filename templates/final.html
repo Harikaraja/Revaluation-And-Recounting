@@ -16,7 +16,7 @@
                 <th>Grades</th>
                 <th>Revaluation Status</th>
             </tr>
-            {% for reval in Revaluation.all %}
+            {% for reval in Revaluation %}
             
                 <input type="hidden" name="id[]" value="{{reval.id}}" />
             <tr>

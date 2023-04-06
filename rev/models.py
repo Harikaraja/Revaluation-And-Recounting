@@ -17,3 +17,13 @@ class Revaluation(models.Model):
     Credits=models.IntegerField()
     Grades=models.CharField(max_length=2)
     Revaluation_Status=models.CharField(max_length=20)
+
+class Regulations_19(models.Model):
+    Lower_limit=models.IntegerField()
+    Upper_limit=models.IntegerField()
+    Grades=models.CharField(max_length=2)
+
+class Regulations_20(models.Model):
+    Lower_limit=models.IntegerField()
+    Upper_limit=models.IntegerField()
+    Grades=models.CharField(max_length=2)
