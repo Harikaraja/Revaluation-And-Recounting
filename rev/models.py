@@ -27,3 +27,9 @@ class Regulations_20(models.Model):
     Lower_limit=models.IntegerField()
     Upper_limit=models.IntegerField()
     Grades=models.CharField(max_length=2)
+
+class Regulations_with_Grades(models.Model):
+    Regulation=models.CharField(max_length=20)
+    Lower_limit=models.IntegerField()
+    Upper_limit=models.IntegerField()
+    Grades=models.CharField(max_length=2)

@@ -5,6 +5,17 @@
 <html>
     <link rel="stylesheet" href="{% static 'st.css' %}">
     <body>
+
+        <div class="container">
+            <div class="image">
+                <img src="{% static 'assets/jntugv.png' %}" alt="College Logo" style="width: 5%;height: 5%;">
+            </div>
+            <div class="text">
+                <center><h1>JNTU-GV COLLEGE OF ENGINEERING VIZIANAGARAM(AUTONOMOUS)</h1></center>
+                <center><h1>JAWAHARLAL NEHRU TECHNOLOGICAL UNIVERSITY GURAJADA VIZIANAGARAM</h1></center>
+            </div>
+          </div>
+
         <form method="POST" action="{%  url 'rev:data' %}">
             {%csrf_token%}
         <table style="width:100%">
@@ -25,7 +36,7 @@
             {% for reval in Revaluation.all %}
             
                 <input type="hidden" name="id[]" value="{{reval.id}}" />
-            <tr>
+            <tr {% if reval.id in ids %}class="danger"{% endif %}>
                
                 <td><center>{{reval.id}}</center></td>
                 <td><center>{{reval.Hallticket}}</center>

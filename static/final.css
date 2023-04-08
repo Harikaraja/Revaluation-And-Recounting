@@ -20,3 +20,20 @@ button{
     border-style: none;
     margin: auto;
 }
+.container {
+    align-items: center;
+    justify-content: center;
+  }
+  
+  img {
+    max-width: 25%;
+    max-height:15%;
+    float: left;
+  }
+  
+  .text {
+    font-size: 10px;
+    padding-left: 20px;
+    padding-top: 3px;
+    float: inline-end;
+  }

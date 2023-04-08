@@ -1,0 +1,86 @@
+body{
+    background-image: url('assets/background.png');
+    background-attachment: fixed;
+    background-size: 100% 100%;
+}
+
+input[type="file"]{
+    display: none;
+}
+
+.button {
+    background-color: #78A8DA; /* Green */
+    border: aliceblue;
+    color: white;
+    
+    position:fixed;
+    bottom:80px;
+    left:50%;
+    transform:translateX(-50%);
+}
+option{
+    background-color: white;
+    font-size: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 800px;
+  }
+  .flex {
+    display: flex; 
+    
+    align-items: center; 
+  }
+  
+  .flex select {
+    flex: 1; /* Allow the select element to grow to fill remaining space */
+  }
+   .flex img{
+    max-width: 100%; /* Ensure the image scales within the container */
+  margin-right: 10px; 
+  }
+  
+  .select-style {
+    padding: 8px;
+    margin: 0;
+    border: 2px solid black;
+    width: 370px;
+    border-radius: 3px;
+    overflow: hidden;
+    background-color: white;
+    background: white;
+    position: relative;
+  }
+  .select-style select {
+    padding: 8px 8px;
+    width: 100%;
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+    background-image: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  .select-style:after {
+    top: 50%;
+    left: 85%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-color: rgba(0, 0, 0, 0);
+    border-top-color: #000000;
+    border-width: 5px;
+    margin-top: -2px;
+    z-index: 100;
+  }
+  .select-style select:focus {
+    outline: none;
+  }
+  label{
+    padding:0px;
+    font-size: 18px;
+    text-transform: uppercase;
+  }
+.submit {border-radius: 20%;}

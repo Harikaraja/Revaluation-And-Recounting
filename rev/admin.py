@@ -4,3 +4,4 @@ from .models import *
 admin.site.register(Revaluation)
 admin.site.register(Regulations_19)
 admin.site.register(Regulations_20)
+admin.site.register(Regulations_with_Grades)
