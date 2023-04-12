@@ -18,10 +18,15 @@ def home(request):
             
             file = form.cleaned_data['file']
             Revaluation.objects.all().delete()
+            Revaluation_copy.objects.all().delete()
             csv_data = csv.reader(file.read().decode('utf-8').splitlines())
             for columns in csv_data:
-                revaluation = Revaluation(id=columns[0],Application_type=columns[1], Hallticket=columns[2],Student_Name=columns[3],Subject_code=columns[4],Subject=columns[5],Mobile=columns[6],Dhondi_id=columns[7],Amount=columns[8],Internal_marks=columns[9],External_marks=columns[10],Second_evaluation=columns[11],Third_evaluation=columns[12],Credits=columns[13],Grades=columns[14],Revaluation_Status=columns[15])
+                revaluation = Revaluation(id=columns[0],Application_type=columns[1], Hallticket=columns[2],Student_Name=columns[3],Subject_code=columns[4],Subject=columns[5],Mobile=columns[6],Dhondi_id=columns[7],Amount=columns[8],Internal_marks=columns[9],External_marks=columns[10],Credits=columns[11],Grades=columns[12],Revaluation_Status=columns[13])
+                revaluation_copy = Revaluation_copy(id=columns[0] ,Hallticket=columns[2],Student_Name=columns[3],Subject_code=columns[4],Subject=columns[5],Internal_marks=columns[9],External_marks=columns[10],Credits=columns[11],Grades=columns[12],Revaluation_Status=columns[13])
+                
                 revaluation.save()
+                revaluation_copy.save()
+            revaluation=Revaluation.objects.all()
             
             select_value=request.POST.get('Regulation')
             if select_value == None:
@@ -30,8 +35,8 @@ def home(request):
                 context = {'message': message,'status':status}
                 return render(request, 'home.html',context)
             
-            revaluation=Revaluation.objects.all()
-            return render(request,'index.html',{"Revaluation":revaluation})
+            revaluation=Revaluation_copy.objects.all()
+            return render(request,'index.html',{"Revaluation_copy":revaluation,"Regulation":select_value})
 
 
         else:
@@ -41,18 +46,18 @@ def home(request):
             return render(request, 'home.html',context)
     return render(request, 'home.html')
 def data(request):
-    revaluation=Revaluation.objects.all()
+    revaluation=Revaluation_copy.objects.all()
 
     if request.method == 'GET':
 
-        return render(request,'index.html',{"Revaluation":revaluation})
+        return render(request,'index.html',{"Revaluation_copy":revaluation})
     elif request.method == 'POST':
         id=request.POST.getlist('id[]')
         sec_eval=request.POST.getlist('s_eval[]')
         third_eval=request.POST.getlist('t_eval[]')
         #print(id,sec_eval,third_eval)
         for i in range(len(sec_eval)):
-            r=Revaluation.objects.filter(id=id[i]).first()
+            r=Revaluation_copy.objects.filter(id=id[i]).first()
             r.Second_evaluation=sec_eval[i]
             r.Third_evaluation=third_eval[i]
             r.save()
@@ -62,24 +67,37 @@ def result(request):
     Reg=request.GET.get('Regulation')
     results=Revaluation.objects.all()
     #reg_20=Regulations_20.objects.all()
-    id=Revaluation.objects.values_list('id',flat=True)
-    grades=Revaluation.objects.values_list('Grades',flat=True)
-    sec_eval=Revaluation.objects.values_list('Second_evaluation',flat=True)
-    third_eval=Revaluation.objects.values_list('Third_evaluation',flat=True)
-    I_marks=Revaluation.objects.values_list('Internal_marks',flat=True)
-    E_marks=Revaluation.objects.values_list('External_marks',flat=True)
+    id=Revaluation_copy.objects.values_list('id',flat=True)
+    grades=Revaluation_copy.objects.values_list('Grades',flat=True)
+    sec_eval=Revaluation_copy.objects.values_list('Second_evaluation',flat=True)
+    third_eval=Revaluation_copy.objects.values_list('Third_evaluation',flat=True)
+    I_marks=Revaluation_copy.objects.values_list('Internal_marks',flat=True)
+    E_marks=Revaluation_copy.objects.values_list('External_marks',flat=True)
     
     regulation=Regulations_with_Grades.objects.values_list('Regulation',flat=True)
     
-    for i in range(len(id)):
+    for i in range(len(sec_eval)):
         j=0
+        print(id)
+        r = Revaluation_copy.objects.get(id=id[i])
+        
+        subject=Subject_max_marks.objects.filter(Subjects=r.Subject,Subject_codes=r.Subject_code).first()
+        if subject:
+            min_marks=subject.min_marks
+        
         total=I_marks[i]+E_marks[i]
-        if total > sec_eval[i]:
+        if E_marks[i] > sec_eval[i]:
             None
-        elif(sec_eval[i]<30):
+        
+        elif(sec_eval[i]>min_marks):
             r.External_marks=sec_eval[i]
+        elif(sec_eval[i]>third_eval[i]):
+            r.External_marks=sec_eval[i]
+        elif(E_marks[i]>third_eval[i]):
+            None
+        
         else:
-            r=Revaluation.objects.filter(id=id[i]).first()
+            r=Revaluation_copy.objects.filter(id=id[i]).first()
             re=Regulations_with_Grades.objects.filter(Regulation=Reg,Lower_limit__lte=sec_eval[i],Upper_limit__gte=sec_eval[i]).first()
             grade=re.Grades if re else None
             r.Grades=grade
@@ -105,25 +123,26 @@ def result(request):
     #print(results)
             r.save()
             j=j+1
-    return render(request,'final.html',{"Revaluation":results})
+    return render(request,'final.html',{"Revaluation_copy":results})
 
 def Third_eval(request):
     count = 0
     ids=[]
     j=0
-    revaluation=Revaluation.objects.all()
-    id=Revaluation.objects.values_list('id',flat=True)
-    grades=Revaluation.objects.values_list('Grades',flat=True)
-    sec_eval=Revaluation.objects.values_list('Second_evaluation',flat=True)
-    third_eval=Revaluation.objects.values_list('Third_evaluation',flat=True)
-    I_marks=Revaluation.objects.values_list('Internal_marks',flat=True)
-    E_marks=Revaluation.objects.values_list('External_marks',flat=True)
+    revaluation=Revaluation_copy.objects.all()
+    id=Revaluation_copy.objects.values_list('id',flat=True)
+    grades=Revaluation_copy.objects.values_list('Grades',flat=True)
+    sec_eval=Revaluation_copy.objects.values_list('Second_evaluation',flat=True)
+    third_eval=Revaluation_copy.objects.values_list('Third_evaluation',flat=True)
+    I_marks=Revaluation_copy.objects.values_list('Internal_marks',flat=True)
+    E_marks=Revaluation_copy.objects.values_list('External_marks',flat=True)
     for i in range(len(id)):
         total=I_marks[i]+E_marks[i]
         if ((total-sec_eval[i])>=15):
             count+=1
             ids.append(id[i])
     if(count>0):
-        return render(request,'index.html',{"Revaluation":revaluation,"ids":ids})
+        return render(request,'index.html',{"Revaluation_copy":revaluation,"ids":ids})
+    
     else:
         return HttpResponseRedirect(reverse('rev:result'))

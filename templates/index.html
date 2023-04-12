@@ -33,7 +33,7 @@
                 <th id="head">THIRD EVALUATION</th>
                 
             </tr>
-            {% for reval in Revaluation.all %}
+            {% for reval in Revaluation_copy.all %}
             
                 <input type="hidden" name="id[]" value="{{reval.id}}" />
             <tr {% if reval.id in ids %}class="danger"{% endif %}>
