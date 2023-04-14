@@ -114,7 +114,7 @@ def result(request):
             #print(grades)
                 r.Credits=0
                 print(r.Credits)
-            if total==sec_eval[i]:
+            if E_marks[i]==sec_eval[i]:
                 r.Revaluation_Status="No Change"
             else:
                 r.Revaluation_Status="Change"
@@ -138,7 +138,7 @@ def Third_eval(request):
     E_marks=Revaluation_copy.objects.values_list('External_marks',flat=True)
     for i in range(len(id)):
         total=I_marks[i]+E_marks[i]
-        if ((total-sec_eval[i])>=15):
+        if ((E_marks[i]-sec_eval[i])>=15):
             count+=1
             ids.append(id[i])
     if(count>0):

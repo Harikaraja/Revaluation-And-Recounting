@@ -8,6 +8,9 @@
     visibility: hidden;
     display: none;
    }
+   button{
+    visibility: hidden;
+   }
   .topnav{
     visibility: hidden;
     display: none;

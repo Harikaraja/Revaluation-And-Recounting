@@ -51,11 +51,11 @@
                 <td id="name"><center>{{reval.Grades}}</center></td>
                 <td><center>{{reval.Credits}}</center></td>
                 <td>
-                    <input type="number" placeholder="Marks......" name="s_eval[]" value=1>
+                    <input type="number" placeholder="Marks......" name="s_eval[]" value={{reval.Second_evaluation}}>
                 </td>
                 
                 <td>
-                    <input type="number" placeholder="Marks......" name="t_eval[]" value=2>
+                    <input type="number" placeholder="Marks......" name="t_eval[]" value={{reval.Third_evaluation}}>
                 </td>
             </tr>
             {% endfor %}
