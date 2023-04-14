@@ -75,12 +75,12 @@ def result(request):
     E_marks=Revaluation_copy.objects.values_list('External_marks',flat=True)
     
     regulation=Regulations_with_Grades.objects.values_list('Regulation',flat=True)
-    
+    #print(sec_eval)
     for i in range(len(sec_eval)):
         j=0
-        print(id)
+        #print(id)
         r = Revaluation_copy.objects.get(id=id[i])
-        
+        min_marks = 0
         subject=Subject_max_marks.objects.filter(Subjects=r.Subject,Subject_codes=r.Subject_code).first()
         if subject:
             min_marks=subject.min_marks
@@ -92,7 +92,7 @@ def result(request):
         elif(sec_eval[i]>min_marks):
             r.External_marks=sec_eval[i]
         elif(sec_eval[i]>third_eval[i]):
-            r.External_marks=sec_eval[i]
+            r.External_marks=sec_eval[i]      #no direct assignment 
         elif(E_marks[i]>third_eval[i]):
             None
         
@@ -138,10 +138,15 @@ def Third_eval(request):
     E_marks=Revaluation_copy.objects.values_list('External_marks',flat=True)
     for i in range(len(id)):
         total=I_marks[i]+E_marks[i]
-        if ((E_marks[i]-sec_eval[i])>=15):
+        #print("marks: ",sec_eval[i]-E_marks[i])
+        if ((sec_eval[i]-E_marks[i])>=15):
             count+=1
             ids.append(id[i])
+    
+    #print("ids: ",ids)
+    #print("count is: ",count)
     if(count>0):
+        
         return render(request,'index.html',{"Revaluation_copy":revaluation,"ids":ids})
     
     else:
