@@ -172,14 +172,14 @@ def Third_eval(request):
             i_marks=subject.Max_internal
             e_marks=subject.Max_external
         #print("marks: ",sec_eval[i]-E_marks[i])
-        if(I_marks[i]>=i_marks):
+        '''if(I_marks[i]>=i_marks):
             ids.append(id[i])
             message='Invalid Internal Marks'
             context = {'message': message}
         if(E_marks[i]>=e_marks):
             ids.append(id[i])
             message='Invalid External Marks'
-            context = {'message': message}
+            context = {'message': message}'''
         if ((sec_eval[i]-E_marks[i])>=15):
             count+=1
             ids.append(id[i])
