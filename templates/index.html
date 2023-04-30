@@ -36,6 +36,12 @@
             {% for reval in Revaluation_copy.all %}
             
                 <input type="hidden" name="id[]" value="{{reval.id}}" />
+                {% if status == 0 %}  
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>{% if message %}<p>{{ message }}</p>{% endif %}</strong> 
+                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
             <tr {% if reval.id in ids %}class="danger"{% endif %}>
                
                 <td><center>{{reval.id}}</center></td>
@@ -46,10 +52,10 @@
                 <td id="name"><center>{{reval.Subject_code}}</center></td>
                 <td><center>{{reval.Subject}}</center></td>
                 
-                <td><center>{{reval.Internal_marks}}</center></td>
-                <td><center>{{reval.External_marks}}</center></td>
-                <td id="name"><center>{{reval.Grades}}</center></td>
-                <td><center>{{reval.Credits}}</center></td>
+                <td><input type="number" placeholder="Marks......" name="i_marks[]" value={{reval.Internal_marks}}></td>
+                <td><input type="number" placeholder="Marks......" name="e_marks[]" value={{reval.External_marks}}></td>
+                <td id="name"><input placeholder="Marks......" name="grades[]" value={{reval.Grades}}></td>
+                <td><input type="number" placeholder="Marks......" name="credits[]" value={{reval.Credits}}></td>
                 <td>
                     <input type="number" placeholder="Marks......" name="s_eval[]" value={{reval.Second_evaluation}}>
                 </td>
