@@ -21,8 +21,8 @@ def home(request):
             Revaluation_copy.objects.all().delete()
             csv_data = csv.reader(file.read().decode('utf-8').splitlines())
             for columns in csv_data:
-                revaluation = Revaluation(id=columns[0],Application_type=columns[1], Hallticket=columns[2],Student_Name=columns[3],Subject_code=columns[4],Subject=columns[5],Mobile=columns[6],Dhondi_id=columns[7],Amount=columns[8],Internal_marks=columns[9],External_marks=columns[10],Credits=columns[11],Grades=columns[12],Revaluation_Status=columns[13])
-                revaluation_copy = Revaluation_copy(id=columns[0] ,Hallticket=columns[2],Student_Name=columns[3],Subject_code=columns[4],Subject=columns[5],Internal_marks=columns[9],External_marks=columns[10],Credits=columns[11],Grades=columns[12],Revaluation_Status=columns[13])
+                revaluation = Revaluation(id=columns[0],Application_type=columns[1], Hallticket=columns[2],Student_Name=columns[3],Subject_code=columns[4],Subject=columns[5],Mobile=columns[6],Dhondi_id=columns[7],Amount=columns[8])
+                revaluation_copy = Revaluation_copy(id=columns[0] ,Hallticket=columns[2],Student_Name=columns[3],Subject_code=columns[4],Subject=columns[5])
                 
                 revaluation.save()
                 revaluation_copy.save()
@@ -36,6 +36,8 @@ def home(request):
                 return render(request, 'home.html',context)
             
             revaluation=Revaluation_copy.objects.all()
+            grades=Revaluation_copy.objects.values_list('Grades',flat=True)
+            print(grades)
             return render(request,'index.html',{"Revaluation_copy":revaluation,"Regulation":select_value})
 
 
@@ -53,6 +55,10 @@ def data(request):
         return render(request,'index.html',{"Revaluation_copy":revaluation})
     elif request.method == 'POST':
         id=request.POST.getlist('id[]')
+        internal_marks=request.POST.getlist('i_marks[]')
+        external_marks=request.POST.getlist('e_marks[]')
+        credits=request.POST.getlist('credits[]')
+        grades=request.POST.getlist('grades[]')
         sec_eval=request.POST.getlist('s_eval[]')
         third_eval=request.POST.getlist('t_eval[]')
         #print(id,sec_eval,third_eval)
@@ -60,6 +66,10 @@ def data(request):
             r=Revaluation_copy.objects.filter(id=id[i]).first()
             r.Second_evaluation=sec_eval[i]
             r.Third_evaluation=third_eval[i]
+            r.Internal_marks=internal_marks[i]
+            r.External_marks=external_marks[i]
+            r.Credits=credits[i]
+            r.Grades=grades[i]
             r.save()
         return HttpResponseRedirect(reverse('rev:Third_eval'))
 
@@ -144,25 +154,41 @@ def Third_eval(request):
     count = 0
     ids=[]
     j=0
+    subject=Subject_max_marks.objects.all()
     revaluation=Revaluation_copy.objects.all()
     id=Revaluation_copy.objects.values_list('id',flat=True)
+    subject_code=Revaluation_copy.objects.values_list('Subject_code',flat=True)
     grades=Revaluation_copy.objects.values_list('Grades',flat=True)
     sec_eval=Revaluation_copy.objects.values_list('Second_evaluation',flat=True)
     third_eval=Revaluation_copy.objects.values_list('Third_evaluation',flat=True)
     I_marks=Revaluation_copy.objects.values_list('Internal_marks',flat=True)
     E_marks=Revaluation_copy.objects.values_list('External_marks',flat=True)
     for i in range(len(id)):
-        total=I_marks[i]+E_marks[i]
+        e_marks=0
+        i_marks=0
+        message=''
+        
+        if subject:
+            i_marks=subject.Max_internal
+            e_marks=subject.Max_external
         #print("marks: ",sec_eval[i]-E_marks[i])
+        if(I_marks[i]>=i_marks):
+            ids.append(id[i])
+            message='Invalid Internal Marks'
+            context = {'message': message}
+        if(E_marks[i]>=e_marks):
+            ids.append(id[i])
+            message='Invalid External Marks'
+            context = {'message': message}
         if ((sec_eval[i]-E_marks[i])>=15):
             count+=1
             ids.append(id[i])
+            message='Third Evaluation is required'
+            context = {'message': message}
     
-    #print("ids: ",ids)
-    #print("count is: ",count)
     if(count>0):
         
-        return render(request,'index.html',{"Revaluation_copy":revaluation,"ids":ids})
+        return render(request,'index.html',{"Revaluation_copy":revaluation,"ids":ids,"context":context})
     
     else:
         return HttpResponseRedirect(reverse('rev:result'))
