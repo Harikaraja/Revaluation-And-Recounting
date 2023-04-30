@@ -18,7 +18,7 @@
         
        <img src="{% static 'assets/jntugv.png' %}" alt="JNTUGV logo" style="width: 5%;margin-top: 10%;margin-left: 75%;" >
        <centre>
-       <div style="display:flex;align-items:center;gap:10px;position:fixed;bottom:140px;left:50%;transform:translateX(-50%);">
+       <div style="display:flex;align-items:center;gap:10px;position:fixed;bottom:140px;left:49%;transform:translateX(-50%);">
         
                 <div class="select-style">
                     <label>Select Regulation</label>
@@ -29,7 +29,13 @@
                     </select>
                 </div>
             
+            <input type="file" id="uploadresBtn" name="files">
+            <h5>Result file</h5>
+            <label for="uploadBtn"><img src="{% static 'assets/upload.png' %}" alt="Upload Image" id="upload" style="width:70px;height:75px;"></label>
+            
+
             <input type="file" id="uploadBtn" name="file">
+            <h5>Revaluation file</h5>
             <label for="uploadBtn"><img src="{% static 'assets/upload.png' %}" alt="Upload Image" id="upload" style="width:70px;height:75px;"></label>
             
        </div>
