@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.db.models import Case, When
 from .forms import UploadForm
 import csv
+import math
 # Create your views here.
 def home(request):
     status=0
@@ -21,18 +22,21 @@ def home(request):
             file = form.cleaned_data['file']
             file2 = form.cleaned_data['file2']
 
-            csv_data = csv.reader(file2.read().decode('utf-8').splitlines())
-            for columns in csv_data:
-                orginal_Result.objects.create(id=columns[0],Hallticket=columns[1], Name=columns[2],subject_code=columns[3],subject_type=columns[4],subject_name=columns[5],Internal=columns[6],External=columns[7],Total=columns[8],grade_letter = columns[9],credits=columns[10])
-              
-                
-           
             Revaluation.objects.all().delete()
             Revaluation_copy.objects.all().delete()
+            orginal_Result.objects.all().delete()
+
+            csv_data = csv.reader(file2.read().decode('utf-8').splitlines())
+            for columns in csv_data:
+                orginal_Result.objects.create(Hallticket=columns[0],subject_code=columns[1],subject_type=columns[2],subject_name=columns[3],Internal=columns[4],External=columns[5],Total=columns[6],grade_letter = columns[9],credits=columns[7])
+
+                
+           
             csv_data = csv.reader(file.read().decode('utf-8').splitlines())
             for columns in csv_data:
+                result=orginal_Result.objects.filter(Hallticket=columns[2]).first()
                 revaluation = Revaluation(id=columns[0],Application_type=columns[1], Hallticket=columns[2],Student_Name=columns[3],Subject_code=columns[4],Subject=columns[5],Mobile=columns[6],Dhondi_id=columns[7],Amount=columns[8])
-                revaluation_copy = Revaluation_copy(id=columns[0] ,Hallticket=columns[2],Student_Name=columns[3],Subject_code=columns[4],Subject=columns[5])
+                revaluation_copy = Revaluation_copy(id=columns[0] ,Hallticket=columns[2],Subject_code=columns[4],Subject=columns[5],Internal_marks=result.Internal,External_marks=result.External,Grades=result.grade_letter,Credits=result.credits)
                 
                 revaluation.save()
                 revaluation_copy.save()
@@ -47,8 +51,11 @@ def home(request):
             
             revaluation=Revaluation_copy.objects.all()
             grades=Revaluation_copy.objects.values_list('Grades',flat=True)
+            subjects=Revaluation_copy.objects.values_list('Subject_code',flat=True)
+            subjects_info=Subject_max_marks.objects.filter(subject_code__in=subjects)
+            original_results=orginal_Result.objects.all()
             print(grades)
-            return render(request,'index.html',{"Revaluation_copy":revaluation,"Regulation":select_value})
+            return render(request,'index.html',{"Revaluation_copy":revaluation,"Regulation":select_value,"subjects_info":subjects_info})
 
 
         else:
@@ -65,23 +72,64 @@ def data(request):
         return render(request,'index.html',{"Revaluation_copy":revaluation})
     elif request.method == 'POST':
         id=request.POST.getlist('id[]')
-        internal_marks=request.POST.getlist('i_marks[]')
-        external_marks=request.POST.getlist('e_marks[]')
-        credits=request.POST.getlist('credits[]')
-        grades=request.POST.getlist('grades[]')
+        # internal_marks=request.POST.getlist('i_marks[]')
+        # external_marks=request.POST.getlist('e_marks[]')
+        # credits=request.POST.getlist('credits[]')
+        # grades=request.POST.getlist('grades[]')
         sec_eval=request.POST.getlist('s_eval[]')
+        sec_eval=[int(i) for i in sec_eval]
         third_eval=request.POST.getlist('t_eval[]')
+        third_eval=[int(i) for i in third_eval]
+        Regulation=request.POST.get('Regulation')
         #print(id,sec_eval,third_eval)
         for i in range(len(sec_eval)):
             r=Revaluation_copy.objects.filter(id=id[i]).first()
+            subject_info = Subject_max_marks.objects.filter(subject_code=r.Subject_code).first()
+            
+            # diff >15 , now find nearest 2 evals and take average
+            diff = abs(r.External_marks-sec_eval[i])
+            final_eval_result=0
+            if(diff>=15):
+                diff_2_3 =abs(sec_eval[i]-third_eval[i])
+                diff_1_3 =abs(r.External_marks-third_eval[i])
+                if diff<diff_2_3 and diff<diff_1_3:
+                    final_eval_result=math.ceil((r.External_marks+sec_eval[i])/2)
+                elif(diff_1_3<diff_2_3):
+                    final_eval_result=math.ceil((r.External_marks+third_eval[i])/2)
+                else:
+                    final_eval_result=math.ceil((sec_eval[i]+third_eval[i])/2)
+            else:
+                final_eval_result=sec_eval[i]
+
+            
+            # if fails in 2nd eval and diff < 15 then first eval will be final
+            status="No Change"
+            Grade=r.Grades
+            Credits=0 if r.Grades=='F' else r.Credits
+            if final_eval_result>=subject_info.pass_external_marks:
+                # if passes in 2nd eval then final marks= 2nd eval + internal and check grade change
+                if final_eval_result>r.External_marks:
+                    total_marks=r.Internal_marks+final_eval_result
+                    total_perc=math.ceil((total_marks/subject_info.max_total_marks)*100)
+                    grade=Regulations_with_Grades.objects.filter(Lower_limit__lte=total_perc,Upper_limit__gte=total_perc,Regulation=Regulation).first().Grades
+                    if grade!=r.Grades:
+                        status="Change"
+                        Grade=grade
+                        Credits=subject_info.credits
+                    else:
+                        final_eval_result=r.External_marks
+                else:
+                    final_eval_result=r.External_marks
+            else:
+                final_eval_result=r.External_marks
             r.Second_evaluation=sec_eval[i]
             r.Third_evaluation=third_eval[i]
-            r.Internal_marks=internal_marks[i]
-            r.External_marks=external_marks[i]
-            r.Credits=credits[i]
-            r.Grades=grades[i]
+            r.Total_after_revaluation=final_eval_result+r.Internal_marks
+            r.Credits=Credits
+            r.Grades=Grade
+            r.Revaluation_Status=status
             r.save()
-        return HttpResponseRedirect(reverse('rev:Third_eval'))
+        return render(request,"final.html",{"Revaluation_copy":Revaluation_copy.objects.all()})
 
 def result(request):
     Reg=request.GET.get('Regulation')
