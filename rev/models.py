@@ -1,6 +1,18 @@
 from django.db import models
 
 # Create your models here.
+class orginal_Result(models.Model):
+    Hallticket = models.CharField(max_length=20)
+    Name = models.CharField(max_length=250)
+    subject_code = models.CharField(max_length=30)
+    subject_type = models.CharField(max_length=50)
+    subject_name = models.CharField(max_length=50)
+    Internal = models.IntegerField()
+    External = models.IntegerField()
+    Total = models.IntegerField()
+    grade_letter = models.CharField(max_length=2)
+    credits = models.IntegerField()
+
 class Revaluation(models.Model):
     Application_type=models.CharField(max_length=100)
     Hallticket=models.CharField(max_length=20)

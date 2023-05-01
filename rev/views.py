@@ -12,11 +12,21 @@ def home(request):
     
     if request.method == 'POST':
 
-        
+        print(request.FILES['file'])
         form = UploadForm(request.POST, request.FILES)
+
+        
         if form.is_valid():
             
             file = form.cleaned_data['file']
+            file2 = form.cleaned_data['file2']
+
+            csv_data = csv.reader(file2.read().decode('utf-8').splitlines())
+            for columns in csv_data:
+                orginal_Result.objects.create(id=columns[0],Hallticket=columns[1], Name=columns[2],subject_code=columns[3],subject_type=columns[4],subject_name=columns[5],Internal=columns[6],External=columns[7],Total=columns[8],grade_letter = columns[9],credits=columns[10])
+              
+                
+           
             Revaluation.objects.all().delete()
             Revaluation_copy.objects.all().delete()
             csv_data = csv.reader(file.read().decode('utf-8').splitlines())
@@ -42,7 +52,7 @@ def home(request):
 
 
         else:
-            
+            print(form.errors)
             message='Error in Uploading File'
             context = {'message': message,'status':status}
             return render(request, 'home.html',context)
