@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'import_export',
     'rev',
 ]
 
@@ -66,7 +67,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-        },
+        'libraries': {
+            'helpers':'templatetags.helpers'
+        }
+        }
     },
 ]
 
@@ -81,7 +85,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'revaluation_mgm_system',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'venky',
         'HOST': "localhost",
         'PORT': 3306
     }

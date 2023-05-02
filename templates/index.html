@@ -1,5 +1,5 @@
 {%load static%}
-
+{% load helpers %}
 
 <!DOCTYPE html>
 <html>
@@ -25,13 +25,12 @@
             </div>
           </div>
 
-        <form method="POST" action="{%  url 'rev:data' %}">
+        <form method="POST" action="{%  url 'rev:data' %}" id="result_form">
             {%csrf_token%}
         <table style="width:100%">
             <tr>
                 <th id="head">S.No</th>
                 <th id="head">ROLL NO</th>
-                <th id="head">NAME</th>
                 <th id="head">SUBJECT CODE</th>
                 <th id="head">SUBJECT NAME</th>
                 <th id="head">INTERNAL</th>
@@ -57,27 +56,52 @@
                 <td><center>{{reval.Hallticket}}</center>
                 
                 </td>
-                <td><center>{{reval.Student_Name}}</center></td>
                 <td id="name"><center>{{reval.Subject_code}}</center></td>
                 <td><center>{{reval.Subject}}</center></td>
                 
-                <td><input type="number" placeholder="Marks......" name="i_marks[]" value={{reval.Internal_marks}}></td>
-                <td><input type="number" placeholder="Marks......" name="e_marks[]" value={{reval.External_marks}}></td>
-                <td id="name"><input placeholder="Marks......" name="grades[]" value={{reval.Grades}}></td>
-                <td><input type="number" placeholder="Marks......" name="credits[]" value={{reval.Credits}}></td>
+                <td><center>{{reval.Internal_marks}}</center></td>
+                <td><center>{{reval.External_marks}}</center></td>
+                <td id="name"><center>{{reval.Grades}}</center></td>
+                <td><center>{{reval.Credits}}</center></td>
                 <td>
-                    <input type="number" placeholder="Marks......" name="s_eval[]" value={{reval.Second_evaluation}}>
+                    <input type="hidden" name="f_eval[]" value={{reval.External_marks}}>
+                    {% get_subject subjects_info reval.Subject_code as subject %}
+                    <input type="number" placeholder="Marks......" name="s_eval[]" min=0 max=70>
                 </td>
-                
+                <!-- {{subject.max_external_marks}} -->
                 <td>
-                    <input type="number" placeholder="Marks......" name="t_eval[]" value=0>
+                    <input type="number" placeholder="Marks......" name="t_eval[]" value=0 min=0 max=70>
                 </td>
             </tr>
             {% endfor %}
         </table>
         <br>
         <br><br>
-        <center><input id="submission" type="submit" value="Submit"></center>
+        <input type="hidden" name="Regulation" value="{{Regulation}}"/>
+        <center><button id="submission" type="button" value="Submit" onclick="validate_and_compute()">Submit</button></center>
     </form>
+    <script>
+        let first_evalution_marks=document.getElementsByName("f_eval[]")
+        let second_evalution_marks=document.getElementsByName("s_eval[]")
+        let third_evalution_marks=document.getElementsByName("t_eval[]")
+        let length=first_evalution_marks.length
+        console.log(length)
+        function validate_and_compute(){
+            // console.log("validating....")
+            for(let i=0;i<length;i++){
+
+                // console.log(Math.abs(first_evalution_marks[i].value-second_evalution_marks[i].value))
+                if(Math.abs(first_evalution_marks[i].value-second_evalution_marks[i].value)>=15){
+                    let element=third_evalution_marks[i];
+                    if(element.value==0){
+                        alert("Please Enter Third Evaluation Marks");
+                        element.style.borderColor="red";
+                        return;
+                    }
+                }
+            }
+            document.getElementById("result_form").submit();
+        }
+    </script>
     </body>
 </html>
